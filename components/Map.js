@@ -132,9 +132,9 @@ export default function Map({
           >
             <Popup>
               <div className="popup-content">
-                {report.thumbnail && (
+                {report.thumbnail_url && (
                   <img
-                    src={report.thumbnail}
+                    src={report.thumbnail_url}
                     alt="Report"
                     className="popup-thumbnail"
                   />
@@ -151,9 +151,9 @@ export default function Map({
                 </div>
                 <p className="popup-description">{report.description}</p>
                 <div className="popup-meta">
-                  {report.photoCount > 0 && (
+                  {(report.photo_urls?.length > 0 || report.photoCount > 0) && (
                     <span className="popup-photos">
-                      📷 {report.photoCount} photo{report.photoCount !== 1 ? 's' : ''}
+                      📷 {report.photo_urls?.length || report.photoCount} photo{(report.photo_urls?.length || report.photoCount) !== 1 ? 's' : ''}
                     </span>
                   )}
                 </div>

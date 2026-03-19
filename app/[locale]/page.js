@@ -7,7 +7,7 @@ import { Plus, Crosshair, X, Check } from 'lucide-react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ReportForm from '@/components/ReportForm';
-import { getReports } from '@/lib/store';
+import { getReports, subscribeToReports } from '@/lib/store';
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@/lib/utils';
 import { getDictionary } from '@/lib/i18n';
 
@@ -38,8 +38,25 @@ export default function Home() {
   const [flyToPosition, setFlyToPosition] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
 
+  // Load reports on mount (async) and subscribe to realtime updates
   useEffect(() => {
-    setReports(getReports());
+    let unsubscribe;
+
+    async function init() {
+      const initial = await getReports();
+      setReports(initial);
+
+      // Subscribe to live updates from other users
+      unsubscribe = subscribeToReports((updated) => {
+        setReports(updated);
+      });
+    }
+
+    init();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const handleMapClick = useCallback((location) => {
@@ -73,11 +90,13 @@ export default function Home() {
     setPlacementLocation(null);
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
     setShowForm(false);
     setShowSuccess(true);
     setPlacementLocation(null);
-    setReports(getReports());
+    // Realtime will update automatically, but fetch immediately too
+    const updated = await getReports();
+    setReports(updated);
     setTimeout(() => setShowSuccess(false), 2500);
   };
 

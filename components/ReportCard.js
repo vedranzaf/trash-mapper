@@ -12,8 +12,8 @@ export default function ReportCard({ report, onClick, locale = 'en' }) {
   return (
     <div className="report-card" onClick={onClick} role="button" tabIndex={0}>
       <div className="report-card-top">
-        {report.thumbnail ? (
-          <img src={report.thumbnail} alt={t.report} className="report-card-thumbnail" />
+        {report.thumbnail_url ? (
+          <img src={report.thumbnail_url} alt={t.report} className="report-card-thumbnail" />
         ) : (
           <div className="report-card-no-photo">🗑️</div>
         )}
@@ -24,7 +24,7 @@ export default function ReportCard({ report, onClick, locale = 'en' }) {
               style={{ color: severity.color, background: severity.bg }}>
               {severity.emoji} {sevLabel}
             </span>
-            <span className="report-card-time">{timeAgoLocalized(report.createdAt, locale)}</span>
+            <span className="report-card-time">{timeAgoLocalized(report.created_at || report.createdAt, locale)}</span>
           </div>
 
           <p className="report-card-description">
@@ -32,10 +32,10 @@ export default function ReportCard({ report, onClick, locale = 'en' }) {
           </p>
 
           <div className="report-card-footer">
-            {report.photoCount > 0 && (
+            {(report.photo_urls?.length > 0 || report.photoCount > 0) && (
               <span className="report-card-footer-item">
                 <Camera size={12} />
-                {report.photoCount} {report.photoCount !== 1 ? t.photos : t.photo}
+                {(report.photo_urls?.length || report.photoCount)} {(report.photo_urls?.length || report.photoCount) !== 1 ? t.photos : t.photo}
               </span>
             )}
             <span className="report-card-footer-item">

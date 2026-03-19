@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { X, MapPin, Send } from 'lucide-react';
 import PhotoUpload from './PhotoUpload';
-import { addReport, generateId } from '@/lib/store';
+import { addReport } from '@/lib/store';
 import { formatCoords, getSeverityConfig } from '@/lib/utils';
 import { getDictionary, getSeverityLabel } from '@/lib/i18n';
 
@@ -11,10 +11,12 @@ const SEVERITIES = ['low', 'medium', 'high', 'critical'];
 
 export default function ReportForm({ location, onClose, onSuccess, locale = 'en' }) {
   const t = getDictionary(locale);
+  // photos: array of { previewUrl, blob }
   const [photos, setPhotos] = useState([]);
   const [description, setDescription] = useState('');
   const [severity, setSeverity] = useState('medium');
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
 
   const canSubmit = location && description.trim().length > 0;
 
@@ -23,19 +25,22 @@ export default function ReportForm({ location, onClose, onSuccess, locale = 'en'
     if (!canSubmit || submitting) return;
 
     setSubmitting(true);
+    setUploadProgress(photos.length > 0 ? (locale === 'mk' ? 'Се прикачуваат фотографии...' : 'Uploading photos...') : '');
+
     try {
       const report = {
-        id: generateId(),
         lat: location.lat,
         lng: location.lng,
         description: description.trim(),
         severity,
-        photos,
+        // Pass blobs for Supabase Storage upload
+        photos: photos.map((p) => p.blob),
       };
       await addReport(report);
       onSuccess(report);
     } catch (err) {
       console.error('Failed to save report:', err);
+      setUploadProgress('');
       setSubmitting(false);
     }
   };
@@ -119,6 +124,18 @@ export default function ReportForm({ location, onClose, onSuccess, locale = 'en'
               rows={4} maxLength={500} />
             <div className="form-hint">{description.length}/500 {t.characters}</div>
           </div>
+
+          {/* Upload progress */}
+          {uploadProgress && (
+            <div style={{
+              marginBottom: '16px', padding: '10px 14px',
+              background: 'var(--accent-green-soft)', border: '1px solid var(--border-accent)',
+              borderRadius: 'var(--radius-md)', color: 'var(--accent-green)',
+              fontSize: '13px',
+            }}>
+              {uploadProgress}
+            </div>
+          )}
 
           {/* Submit */}
           <button type="submit" className="btn-submit" disabled={!canSubmit || submitting}>
