@@ -1375,26 +1375,3 @@ img {
 .leaflet-control-zoom a:hover {
   background: var(--bg-card-hover) !important;
 }
-
-/* ---- Language Switcher ---- */
-.lang-switch {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 4px 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  letter-spacing: 0.02em;
-}
-
-.lang-switch:hover {
-  background: var(--bg-card-hover);
-  color: var(--accent-green);
-  border-color: var(--border-accent);
-}

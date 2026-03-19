@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { ChevronUp } from 'lucide-react';
 import ReportCard from './ReportCard';
+import { getDictionary } from '@/lib/i18n';
 
-export default function Sidebar({ reports, onReportClick }) {
-  const [sheetState, setSheetState] = useState('peek'); // collapsed, peek, full
+export default function Sidebar({ reports, onReportClick, locale = 'en' }) {
+  const t = getDictionary(locale);
+  const [sheetState, setSheetState] = useState('peek');
 
   const toggleSheet = () => {
     if (sheetState === 'collapsed') setSheetState('peek');
@@ -28,51 +30,32 @@ export default function Sidebar({ reports, onReportClick }) {
 
       <div className="sidebar-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 className="sidebar-title">Reports</h2>
-          <button
-            className="sidebar-toggle-mobile"
-            onClick={toggleSheet}
-            style={{
-              display: 'none',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-            }}
-          >
-            <ChevronUp
-              size={18}
-              style={{
-                transform: sheetState === 'full' ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 0.3s ease',
-              }}
-            />
-          </button>
+          <h2 className="sidebar-title">{t.reportsTitle}</h2>
         </div>
 
         <div className="sidebar-stats">
           {severityCounts.critical > 0 && (
             <div className="sidebar-stat">
               <div className="sidebar-stat-dot" style={{ background: 'var(--severity-critical)' }} />
-              {severityCounts.critical} critical
+              {severityCounts.critical} {t.critical}
             </div>
           )}
           {severityCounts.high > 0 && (
             <div className="sidebar-stat">
               <div className="sidebar-stat-dot" style={{ background: 'var(--severity-high)' }} />
-              {severityCounts.high} high
+              {severityCounts.high} {t.high}
             </div>
           )}
           {severityCounts.medium > 0 && (
             <div className="sidebar-stat">
               <div className="sidebar-stat-dot" style={{ background: 'var(--severity-medium)' }} />
-              {severityCounts.medium} medium
+              {severityCounts.medium} {t.medium}
             </div>
           )}
           {severityCounts.low > 0 && (
             <div className="sidebar-stat">
               <div className="sidebar-stat-dot" style={{ background: 'var(--severity-low)' }} />
-              {severityCounts.low} low
+              {severityCounts.low} {t.low}
             </div>
           )}
         </div>
@@ -82,18 +65,13 @@ export default function Sidebar({ reports, onReportClick }) {
         {reports.length === 0 ? (
           <div className="sidebar-empty">
             <div className="sidebar-empty-icon">📍</div>
-            <div className="sidebar-empty-text">No reports yet</div>
-            <div className="sidebar-empty-subtext">
-              Tap &quot;Report Trash&quot; to add the first one
-            </div>
+            <div className="sidebar-empty-text">{t.noReports}</div>
+            <div className="sidebar-empty-subtext">{t.noReportsHint}</div>
           </div>
         ) : (
           reports.map((report) => (
-            <ReportCard
-              key={report.id}
-              report={report}
-              onClick={() => onReportClick(report)}
-            />
+            <ReportCard key={report.id} report={report}
+              onClick={() => onReportClick(report)} locale={locale} />
           ))
         )}
       </div>

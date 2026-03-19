@@ -3,9 +3,11 @@
 import { useRef } from 'react';
 import { Camera, X } from 'lucide-react';
 import { compressImage } from '@/lib/store';
+import { getDictionary } from '@/lib/i18n';
 
-export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5 }) {
+export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5, locale = 'en' }) {
   const fileInputRef = useRef(null);
+  const t = getDictionary(locale);
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -21,7 +23,6 @@ export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5 }) {
       }
     }
 
-    // Reset input so the same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -35,13 +36,9 @@ export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5 }) {
     <div className="photo-upload-grid">
       {photos.map((photo, index) => (
         <div key={index} className="photo-upload-item">
-          <img src={photo} alt={`Photo ${index + 1}`} className="photo-upload-preview" />
-          <button
-            type="button"
-            className="photo-upload-remove"
-            onClick={() => removePhoto(index)}
-            aria-label="Remove photo"
-          >
+          <img src={photo} alt={`${t.photo} ${index + 1}`} className="photo-upload-preview" />
+          <button type="button" className="photo-upload-remove"
+            onClick={() => removePhoto(index)} aria-label="Remove">
             <X size={12} />
           </button>
         </div>
@@ -51,18 +48,11 @@ export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5 }) {
         <label className="photo-upload-add" htmlFor="photo-input">
           <Camera size={24} className="photo-upload-add-icon" />
           <span className="photo-upload-add-text">
-            {photos.length === 0 ? 'Add Photos' : 'Add More'}
+            {photos.length === 0 ? t.addPhotos : t.addMore}
           </span>
-          <input
-            ref={fileInputRef}
-            id="photo-input"
-            type="file"
-            accept="image/*"
-            capture="environment"
-            multiple
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
+          <input ref={fileInputRef} id="photo-input" type="file"
+            accept="image/*" capture="environment" multiple
+            onChange={handleFileChange} style={{ display: 'none' }} />
         </label>
       )}
     </div>

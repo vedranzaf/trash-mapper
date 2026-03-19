@@ -5,20 +5,17 @@ import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { ArrowLeft, Clock, MapPin, Camera, Trash2 } from 'lucide-react';
 import { getReportById, getReportPhotos, deleteReport } from '@/lib/store';
-import { timeAgo, getSeverityConfig, formatCoords } from '@/lib/utils';
+import { getSeverityConfig, formatCoords } from '@/lib/utils';
+import { getDictionary, timeAgoLocalized } from '@/lib/i18n';
 
 const MiniMap = dynamic(() => import('@/components/MiniMap'), {
   ssr: false,
   loading: () => (
     <div style={{
-      width: '100%',
-      height: '100%',
+      width: '100%', height: '100%',
       background: 'var(--bg-secondary)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'var(--text-tertiary)',
-      fontSize: '13px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: 'var(--text-tertiary)', fontSize: '13px',
     }}>
       Loading map...
     </div>
@@ -28,6 +25,8 @@ const MiniMap = dynamic(() => import('@/components/MiniMap'), {
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const locale = params.locale || 'en';
+  const t = getDictionary(locale);
   const [report, setReport] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,21 +47,19 @@ export default function ReportDetailPage() {
   }, [params.id]);
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this report?')) {
+    if (confirm(t.deleteConfirm)) {
       await deleteReport(report.id);
-      router.push('/');
+      router.push(`/${locale}`);
     }
   };
 
   if (loading) {
     return (
       <div className="report-detail" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
         color: 'var(--text-secondary)',
       }}>
-        Loading...
+        {t.loading}
       </div>
     );
   }
@@ -70,27 +67,16 @@ export default function ReportDetailPage() {
   if (!report) {
     return (
       <div className="report-detail" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '16px',
-        color: 'var(--text-secondary)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', gap: '16px', color: 'var(--text-secondary)',
       }}>
         <div style={{ fontSize: '48px' }}>🔍</div>
-        <div>Report not found</div>
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            padding: '8px 20px',
-            background: 'var(--accent-green)',
-            color: 'var(--text-inverse)',
-            borderRadius: '999px',
-            fontWeight: 600,
-            fontSize: '14px',
-          }}
-        >
-          Back to Map
+        <div>{t.reportNotFound}</div>
+        <button onClick={() => router.push(`/${locale}`)} style={{
+          padding: '8px 20px', background: 'var(--accent-green)',
+          color: 'var(--text-inverse)', borderRadius: '999px', fontWeight: 600, fontSize: '14px',
+        }}>
+          {t.backToMap}
         </button>
       </div>
     );
@@ -100,47 +86,38 @@ export default function ReportDetailPage() {
 
   return (
     <div className="report-detail">
-      {/* Back button */}
-      <button className="report-detail-back" onClick={() => router.push('/')}>
+      <button className="report-detail-back" onClick={() => router.push(`/${locale}`)}>
         <ArrowLeft size={18} />
       </button>
 
-      {/* Photo Gallery */}
       <div className="report-detail-gallery">
         {photos.length > 0 ? (
           <>
             <div className="report-detail-gallery-scroll">
               {photos.map((photo, index) => (
                 <div key={index} className="report-detail-gallery-item">
-                  <img
-                    src={photo}
-                    alt={`Photo ${index + 1}`}
-                    className="report-detail-gallery-img"
-                  />
+                  <img src={photo} alt={`${t.photo} ${index + 1}`} className="report-detail-gallery-img" />
                 </div>
               ))}
             </div>
             {photos.length > 1 && (
               <div className="report-detail-gallery-counter">
-                {photos.length} photos — swipe to view
+                {photos.length} {t.swipeToView}
               </div>
             )}
           </>
         ) : (
           <div className="report-detail-no-photos">
             <Camera size={48} className="report-detail-no-photos-icon" />
-            <span>No photos attached</span>
+            <span>{t.noPhotos}</span>
           </div>
         )}
       </div>
 
-      {/* Body */}
       <div className="report-detail-body">
-        <div
-          className="report-detail-severity"
-          style={{ color: severity.color, background: severity.bg }}
-        >
-          {severity.emoji} {severity.label} Severity
+        <div className="report-detail-severity"
+          style={{ color: severity.color, background: severity.bg }}>
+          {severity.emoji} {locale === 'mk' ? getDictionary('mk')[`severity${report.severity.charAt(0).toUpperCase() + report.severity.slice(1)}`] : severity.label} {t.severity}
         </div>
 
         <p className="report-detail-description">{report.description}</p>
@@ -148,36 +125,30 @@ export default function ReportDetailPage() {
         <div className="report-detail-info">
           <div className="report-detail-info-row">
             <Clock size={16} className="report-detail-info-icon" />
-            <span className="report-detail-info-label">Reported</span>
-            <span className="report-detail-info-value">{timeAgo(report.createdAt)}</span>
+            <span className="report-detail-info-label">{t.reported}</span>
+            <span className="report-detail-info-value">{timeAgoLocalized(report.createdAt, locale)}</span>
           </div>
-
           <div className="report-detail-info-row">
             <MapPin size={16} className="report-detail-info-icon" />
-            <span className="report-detail-info-label">Location</span>
-            <span className="report-detail-info-value">
-              {formatCoords(report.lat, report.lng)}
-            </span>
+            <span className="report-detail-info-label">{t.location}</span>
+            <span className="report-detail-info-value">{formatCoords(report.lat, report.lng)}</span>
           </div>
-
           <div className="report-detail-info-row">
             <Camera size={16} className="report-detail-info-icon" />
-            <span className="report-detail-info-label">Photos</span>
+            <span className="report-detail-info-label">{t.photosLabel}</span>
             <span className="report-detail-info-value">
-              {report.photoCount} photo{report.photoCount !== 1 ? 's' : ''} attached
+              {report.photoCount} {report.photoCount !== 1 ? t.photos : t.photo} {t.photosAttached}
             </span>
           </div>
         </div>
 
-        {/* Mini map */}
         <div className="report-detail-map">
           <MiniMap lat={report.lat} lng={report.lng} />
         </div>
 
-        {/* Delete button */}
         <button className="report-detail-delete" onClick={handleDelete}>
           <Trash2 size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
-          Delete Report
+          {t.deleteReport}
         </button>
       </div>
     </div>
