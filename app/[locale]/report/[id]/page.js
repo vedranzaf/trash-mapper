@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { ArrowLeft, Clock, MapPin, Camera, Trash2 } from 'lucide-react';
-import { getReportById, getReportPhotos, deleteReport } from '@/lib/store';
+import { getReportById, deleteReport } from '@/lib/store';
 import { getSeverityConfig, formatCoords } from '@/lib/utils';
 import { getDictionary, timeAgoLocalized } from '@/lib/i18n';
 
@@ -28,21 +28,14 @@ export default function ReportDetailPage() {
   const locale = params.locale || 'en';
   const t = getDictionary(locale);
   const [report, setReport] = useState(null);
-  const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (params.id) {
-      const r = getReportById(params.id);
-      if (r) {
-        setReport(r);
-        getReportPhotos(params.id).then((p) => {
-          setPhotos(p);
-          setLoading(false);
-        });
-      } else {
+      getReportById(params.id).then((r) => {
+        setReport(r || null);
         setLoading(false);
-      }
+      });
     }
   }, [params.id]);
 
@@ -82,6 +75,9 @@ export default function ReportDetailPage() {
     );
   }
 
+  // Photos come from Supabase as URLs in photo_urls array
+  const photos = report.photo_urls || [];
+  const photoCount = photos.length;
   const severity = getSeverityConfig(report.severity);
 
   return (
@@ -94,9 +90,9 @@ export default function ReportDetailPage() {
         {photos.length > 0 ? (
           <>
             <div className="report-detail-gallery-scroll">
-              {photos.map((photo, index) => (
+              {photos.map((photoUrl, index) => (
                 <div key={index} className="report-detail-gallery-item">
-                  <img src={photo} alt={`${t.photo} ${index + 1}`} className="report-detail-gallery-img" />
+                  <img src={photoUrl} alt={`${t.photo} ${index + 1}`} className="report-detail-gallery-img" />
                 </div>
               ))}
             </div>
@@ -126,7 +122,7 @@ export default function ReportDetailPage() {
           <div className="report-detail-info-row">
             <Clock size={16} className="report-detail-info-icon" />
             <span className="report-detail-info-label">{t.reported}</span>
-            <span className="report-detail-info-value">{timeAgoLocalized(report.createdAt, locale)}</span>
+            <span className="report-detail-info-value">{timeAgoLocalized(report.created_at || report.createdAt, locale)}</span>
           </div>
           <div className="report-detail-info-row">
             <MapPin size={16} className="report-detail-info-icon" />
@@ -137,7 +133,7 @@ export default function ReportDetailPage() {
             <Camera size={16} className="report-detail-info-icon" />
             <span className="report-detail-info-label">{t.photosLabel}</span>
             <span className="report-detail-info-value">
-              {report.photoCount} {report.photoCount !== 1 ? t.photos : t.photo} {t.photosAttached}
+              {photoCount} {photoCount !== 1 ? t.photos : t.photo} {t.photosAttached}
             </span>
           </div>
         </div>
