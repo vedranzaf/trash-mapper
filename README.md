@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗺️ TrashMapper
+
+**Report & map illegally dumped trash to organize community cleanups.**
+
+TrashMapper is a mobile-friendly web app that lets anyone snap photos of illegal dumping, pin the location on a map, and describe the situation. All reports are collected to help plan and organize garbage cleaning initiatives.
+
+## Features
+
+- 📍 **Interactive Map** — Dark-themed map with all reported locations
+- 📸 **Photo Upload** — Snap multiple photos directly from your phone camera
+- 🗑️ **Report Trash** — Drop a pin, describe the situation, rate severity
+- 📱 **Mobile-First** — Works great on Android and iPhone
+- 🔒 **Privacy-First** — Data stored locally in your browser (no account needed)
+
+## Tech Stack
+
+- **Next.js 14** — React framework with App Router
+- **Leaflet** — Interactive maps with OpenStreetMap tiles
+- **Vanilla CSS** — Custom design system with dark theme + glassmorphism
+- **localStorage + IndexedDB** — Client-side data persistence
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This app is deployed on [Vercel](https://vercel.com). Push to `main` triggers automatic deployment.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
