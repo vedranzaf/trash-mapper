@@ -234,7 +234,7 @@ img {
   flex-direction: column;
   align-items: flex-end;
   gap: var(--space-3);
-  animation: slideUp 0.6s var(--transition-spring) 0.3s forwards;
+  animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
   opacity: 0;
 }
 
