@@ -51,7 +51,7 @@ export default function PhotoUpload({ photos, setPhotos, maxPhotos = 5, locale =
             {photos.length === 0 ? t.addPhotos : t.addMore}
           </span>
           <input ref={fileInputRef} id="photo-input" type="file"
-            accept="image/*" capture="environment" multiple
+            accept="image/*" multiple
             onChange={handleFileChange} style={{ display: 'none' }} />
         </label>
       )}
