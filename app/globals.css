@@ -356,10 +356,6 @@ img {
 .marker-pin-inner {
   transform: rotate(45deg);
   font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
 }
 
 .marker-pin.severity-low { background: var(--severity-low); }
@@ -376,22 +372,19 @@ img {
 .placement-pin {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  background: var(--accent-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 4px rgba(34,197,94,0.25), var(--shadow-md);
-  border: 3px solid rgba(255,255,255,0.5);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+  border: 3px solid rgba(255,255,255,0.3);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .placement-pin-inner {
   color: white;
   font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Popup content */
